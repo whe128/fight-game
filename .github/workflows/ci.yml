@@ -26,9 +26,13 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', 'gradle-wrapper.properties') }}
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', 'gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
+      # give the permission to execute gradlew
+      - name: Make gradlew executable
+        run: chmod +x gradlew
 
       - name: Build the application
         run: ./gradlew assemble
@@ -41,7 +45,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    needs: build # 先 build 再 test
+    needs: build # build job must complete before test job
 
     steps:
       - name: Checkout repository
@@ -59,9 +63,13 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', 'gradle-wrapper.properties') }}
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', 'gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
+      # test job also needs to make gradlew executable
+      - name: Make gradlew executable
+        run: chmod +x gradlew
 
       - name: Run tests
         run: ./gradlew test
